@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="Ardin.BoomDaad.csproj">
+  <Project Path="Ardin.BoomDaad/Ardin.BoomDaad.csproj">
     <Deploy Solution="Debug|*" />
   </Project>
 </Solution>
