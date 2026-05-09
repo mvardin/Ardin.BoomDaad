@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ardin.BoomDaad.MainPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White">
+    <!-- پس زمینه اصلی کل اپ سفید شد -->
+
+    <Grid>
+        <!-- 1. صفحه شروع -->
+        <Grid x:Name="StartScreen" Padding="20">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="25">
+                <Label Text="بازی بوم داد 🎙️" FontSize="36" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+                <Label Text="سریع‌ترین واکنش، بلندترین بووم داد!!" FontSize="18" TextColor="#757575" HorizontalOptions="Center" />
+
+                <Button Text="شروع بازی" FontSize="22" FontAttributes="Bold" TextColor="White" BackgroundColor="#6200EE" 
+                        CornerRadius="30" HeightRequest="60" WidthRequest="250" Margin="0,20,0,0" Clicked="OnStartClicked" />
+            </VerticalStackLayout>
+
+            <Label x:Name="AppInfoLabel" TextColor="#BDBDBD" FontSize="14" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,20"/>
+        </Grid>
+
+        <!-- 2. صفحه ثبت بازیکنان -->
+        <VerticalStackLayout x:Name="PlayerSetupScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="20" IsVisible="False" Padding="20">
+            <Label Text="بازیکن‌ها رو اضافه کن" FontSize="28" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Entry x:Name="PlayerNameEntry" Placeholder="اسم بازیکن..." WidthRequest="200" BackgroundColor="#F5F5F5" TextColor="#212121" PlaceholderColor="#9E9E9E"/>
+                <Button Text="ثبت" BackgroundColor="#4CAF50" TextColor="White" CornerRadius="10" FontAttributes="Bold" Clicked="OnAddPlayerClicked" />
+            </HorizontalStackLayout>
+
+            <Label x:Name="PlayersListLabel" Text="لیست: خالی" TextColor="#757575" FontSize="16" HorizontalOptions="Center" />
+
+            <Button Text="بریم برای تست صدا" FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#FF9800" 
+                    CornerRadius="25" HeightRequest="50" WidthRequest="250" Margin="0,20,0,0" Clicked="OnGoToCalibrationClicked" />
+        </VerticalStackLayout>
+
+        <!-- 3. صفحه تست صدا و کالیبراسیون -->
+        <VerticalStackLayout x:Name="CalibrationScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="25" IsVisible="False" Padding="30">
+            <Label Text="تست میکروفون" FontSize="28" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+
+            <Label x:Name="RawDbLabel" Text="قدرت صدا: 0" FontSize="14" TextColor="#9E9E9E" HorizontalOptions="Center" />
+
+            <!-- نوار نمایش صدا -->
+            <ProgressBar x:Name="MicLevelBar" Progress="0" ProgressColor="#4CAF50" HeightRequest="20" WidthRequest="250" />
+
+            <Label x:Name="CalibrationStatusLabel" Text="..." FontSize="18" FontAttributes="Bold" TextColor="#FF9800" HorizontalOptions="Center" />
+
+            <Button Text="صدا میزونه! شروع مسابقه" FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#2196F3" 
+                    CornerRadius="25" HeightRequest="50" WidthRequest="250" Margin="0,15,0,0" Clicked="OnCalibrationDoneClicked" />
+        </VerticalStackLayout>
+
+        <!-- 4. صفحه اعلام نوبت -->
+        <VerticalStackLayout x:Name="TurnScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="30" IsVisible="False">
+            <Label x:Name="TurnLabel" Text="نوبت: ؟" FontSize="36" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+            <Button Text="آماده‌ام!" FontSize="24" FontAttributes="Bold" TextColor="White" BackgroundColor="#E91E63" 
+                    CornerRadius="30" HeightRequest="60" WidthRequest="200" Clicked="OnReadyForTurnClicked" />
+        </VerticalStackLayout>
+
+        <!-- 5. صفحه بازی (انتظار و گو) -->
+        <VerticalStackLayout x:Name="GameScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="30" IsVisible="False">
+            <!-- این دایره به جای کل پس زمینه، رنگش عوض میشه -->
+            <Frame x:Name="SignalFrame" WidthRequest="150" HeightRequest="150" CornerRadius="75" BackgroundColor="#FF9800" HasShadow="True" BorderColor="Transparent"/>
+
+            <Label x:Name="GameStatusLabel" Text="صبر کن..." FontSize="36" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+            <Label x:Name="TimerLabel" Text="00.000" FontSize="60" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" FontFamily="Monospace" />
+        </VerticalStackLayout>
+
+        <!-- 6. صفحه نتیجه یک دور -->
+        <VerticalStackLayout x:Name="ResultScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="25" IsVisible="False">
+            <Label x:Name="ResultIconLabel" Text="🎯" FontSize="60" HorizontalOptions="Center"/>
+            <Label x:Name="ResultTitleLabel" Text="نتیجه" FontSize="36" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+            <Label x:Name="ResultTimeLabel" Text="00.000 ثانیه" FontSize="28" TextColor="#757575" HorizontalOptions="Center" />
+
+            <Button x:Name="NextStepButton" Text="نفر بعدی" FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#6200EE" 
+                    CornerRadius="25" HeightRequest="50" WidthRequest="250" Margin="0,20,0,0" Clicked="OnNextStepClicked" />
+        </VerticalStackLayout>
+
+        <!-- 7. صفحه لیدربورد -->
+        <VerticalStackLayout x:Name="LeaderboardScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="20" IsVisible="False" Padding="20">
+            <Label Text="🏆 جدول رده‌بندی 🏆" FontSize="32" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
+
+            <VerticalStackLayout x:Name="LeaderboardList" Spacing="15" HorizontalOptions="Center" Margin="0,15,0,0" />
+
+            <Button Text="بازی مجدد" FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#2196F3" 
+                    CornerRadius="25" HeightRequest="50" WidthRequest="200" Margin="0,30,0,0" Clicked="OnPlayAgainClicked" />
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>
