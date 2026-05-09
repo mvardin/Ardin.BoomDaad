@@ -4,7 +4,6 @@
              x:Class="Ardin.BoomDaad.MainPage"
              Shell.NavBarIsVisible="False"
              BackgroundColor="White">
-    <!-- پس زمینه اصلی کل اپ سفید شد -->
 
     <Grid>
         <!-- 1. صفحه شروع -->
