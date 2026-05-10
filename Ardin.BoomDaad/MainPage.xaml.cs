@@ -46,7 +46,7 @@ public partial class MainPage : ContentPage
                 TimerLabel.Text = $"{(int)_stopwatch.Elapsed.TotalSeconds:D2}.{_stopwatch.Elapsed.Milliseconds:D3}";
         };
 
-        SetBackgroundColor(Color.FromArgb("#121212"));
+        SetBackgroundColor(Colors.White);
     }
 
     private void SetBackgroundColor(Color color)
@@ -113,7 +113,7 @@ public partial class MainPage : ContentPage
 
         HideAllScreens();
         CalibrationScreen.IsVisible = true;
-        SetBackgroundColor(Color.FromArgb("#2c3e50"));
+        SetBackgroundColor(Colors.White);
 
         _isInCalibrationMode = true;
         _audioService.OnLevelChanged -= OnAudioLevelChanged;
@@ -124,7 +124,7 @@ public partial class MainPage : ContentPage
         _ambientNoiseLevel = 1000; // یک عدد بالا میدیم تا با اولین سکوت بیاد پایین
         MicLevelBar.Progress = 0;
         CalibrationStatusLabel.Text = "اول هیچی نگو، بعد یه داد بلند بزن!";
-        CalibrationStatusLabel.TextColor = Colors.White;
+        CalibrationStatusLabel.TextColor = Color.FromArgb("#FF9800");
 
         _audioService.Start();
     }
@@ -144,7 +144,7 @@ public partial class MainPage : ContentPage
     {
         HideAllScreens();
         TurnScreen.IsVisible = true;
-        SetBackgroundColor(Color.FromArgb("#673AB7")); // تم بنفش برای اعلام نوبت
+        SetBackgroundColor(Colors.White);
 
         string currentPlayer = _players[_currentPlayerIndex];
         TurnLabel.Text = $"نوبت: {currentPlayer} 🎮";
@@ -163,7 +163,8 @@ public partial class MainPage : ContentPage
         TimerLabel.Text = "00.000";
         _stopwatch.Reset();
 
-        SetBackgroundColor(Color.FromArgb("#FF9800"));
+        SetBackgroundColor(Colors.White);
+        SignalFrame.BackgroundColor = Color.FromArgb("#FF9800");
         GameStatusLabel.Text = "آماده باش...";
         _isWaitingForGreen = true;
         _isGreenGoState = false;
@@ -180,7 +181,7 @@ public partial class MainPage : ContentPage
             _isWaitingForGreen = false;
             _isGreenGoState = true;
 
-            SetBackgroundColor(Color.FromArgb("#4CAF50"));
+            SignalFrame.BackgroundColor = Color.FromArgb("#4CAF50");
             GameStatusLabel.Text = "حالا داد بزن!!!";
 
             _stopwatch.Start();
@@ -225,15 +226,15 @@ public partial class MainPage : ContentPage
                 // 4. بازخورد بصری به کاربر
                 if (currentLevel >= _dynamicShoutThreshold && _maxShoutLevel > _ambientNoiseLevel + 15)
                 {
-                    MicLevelBar.ProgressColor = Color.FromArgb("#FF0000"); // قرمز: داد
+                    MicLevelBar.ProgressColor = Color.FromArgb("#F44336"); // قرمز: داد
                     CalibrationStatusLabel.Text = "عالیه! سیستمت کالیبره شد 🔊";
-                    CalibrationStatusLabel.TextColor = Color.FromArgb("#FF5252");
+                    CalibrationStatusLabel.TextColor = Color.FromArgb("#D32F2F");
                 }
                 else if (currentLevel > _ambientNoiseLevel + 10)
                 {
-                    MicLevelBar.ProgressColor = Color.FromArgb("#FFEB3B"); // زرد: متوسط
+                    MicLevelBar.ProgressColor = Color.FromArgb("#F57C00"); // نارنجی: متوسط
                     CalibrationStatusLabel.Text = "بلندتر... 🔉";
-                    CalibrationStatusLabel.TextColor = Color.FromArgb("#FFEB3B");
+                    CalibrationStatusLabel.TextColor = Color.FromArgb("#F57C00");
                 }
                 else
                 {
@@ -280,8 +281,10 @@ public partial class MainPage : ContentPage
             // ذخیره رکورد
             _scores.Add(new PlayerScore { Name = currentPlayer, Time = finalTime });
 
-            SetBackgroundColor(Color.FromArgb("#2196F3"));
+            SetBackgroundColor(Colors.White);
+            ResultIconLabel.Text = "🎯";
             ResultTitleLabel.Text = $"عالی بود {currentPlayer}!";
+            ResultTitleLabel.TextColor = Color.FromArgb("#212121");
             ResultTimeLabel.Text = $"زمان شما: {(int)_stopwatch.Elapsed.TotalSeconds:D2}.{_stopwatch.Elapsed.Milliseconds:D3} ثانیه";
 
             // تصمیم برای دکمه (نفر بعدی یا لیدربورد)
@@ -292,8 +295,10 @@ public partial class MainPage : ContentPage
         }
         else
         {
-            SetBackgroundColor(Color.FromArgb("#F44336"));
+            SetBackgroundColor(Colors.White);
+            ResultIconLabel.Text = "❌";
             ResultTitleLabel.Text = $"سوختی {currentPlayer}!";
+            ResultTitleLabel.TextColor = Color.FromArgb("#D32F2F");
             ResultTimeLabel.Text = "خیلی زود داد زدی! یکبار دیگه تلاش کن.";
             NextStepButton.Text = "تلاش مجدد";
             try { Vibration.Default.Vibrate(TimeSpan.FromMilliseconds(500)); } catch { }
@@ -323,7 +328,7 @@ public partial class MainPage : ContentPage
     {
         HideAllScreens();
         LeaderboardScreen.IsVisible = true;
-        SetBackgroundColor(Color.FromArgb("#1E1E1E"));
+        SetBackgroundColor(Colors.White);
 
         LeaderboardList.Children.Clear();
 
@@ -344,7 +349,7 @@ public partial class MainPage : ContentPage
             {
                 Text = $"{medal} رتبه {i + 1}: {sortedScores[i].Name} - {sortedScores[i].Time:F3} ثانیه",
                 FontSize = 22,
-                TextColor = (i == 0) ? Color.FromArgb("#FFD700") : Colors.White, // نفر اول طلایی
+                TextColor = (i == 0) ? Color.FromArgb("#F9A825") : Color.FromArgb("#212121"),
                 HorizontalOptions = LayoutOptions.Center
             };
 
@@ -356,6 +361,6 @@ public partial class MainPage : ContentPage
     {
         HideAllScreens();
         StartScreen.IsVisible = true;
-        SetBackgroundColor(Color.FromArgb("#121212"));
+        SetBackgroundColor(Colors.White);
     }
 }

@@ -16,7 +16,7 @@
                         CornerRadius="30" HeightRequest="60" WidthRequest="250" Margin="0,20,0,0" Clicked="OnStartClicked" />
             </VerticalStackLayout>
 
-            <Label x:Name="AppInfoLabel" TextColor="#BDBDBD" FontSize="14" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,20"/>
+            <Label x:Name="AppInfoLabel" TextColor="#757575" FontSize="14" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,20"/>
         </Grid>
 
         <!-- 2. صفحه ثبت بازیکنان -->
@@ -38,7 +38,7 @@
         <VerticalStackLayout x:Name="CalibrationScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="25" IsVisible="False" Padding="30">
             <Label Text="تست میکروفون" FontSize="28" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
 
-            <Label x:Name="RawDbLabel" Text="قدرت صدا: 0" FontSize="14" TextColor="#9E9E9E" HorizontalOptions="Center" />
+            <Label x:Name="RawDbLabel" Text="قدرت صدا: 0" FontSize="14" TextColor="#757575" HorizontalOptions="Center" />
 
             <!-- نوار نمایش صدا -->
             <ProgressBar x:Name="MicLevelBar" Progress="0" ProgressColor="#4CAF50" HeightRequest="20" WidthRequest="250" />
