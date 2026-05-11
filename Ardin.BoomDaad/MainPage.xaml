@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Ardin.BoomDaad.MainPage"
@@ -45,7 +45,10 @@
 
             <Label x:Name="CalibrationStatusLabel" Text="..." FontSize="18" FontAttributes="Bold" TextColor="#FF9800" HorizontalOptions="Center" />
 
-            <Button Text="صدا میزونه! شروع مسابقه" FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#2196F3" 
+            <Button x:Name="CalibrationDoneButton"
+                    Text="صدا میزونه! شروع مسابقه"
+                    IsEnabled="False"
+                    FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#2196F3" 
                     CornerRadius="25" HeightRequest="50" WidthRequest="250" Margin="0,15,0,0" Clicked="OnCalibrationDoneClicked" />
         </VerticalStackLayout>
 
@@ -58,8 +61,7 @@
 
         <!-- 5. صفحه بازی (انتظار و گو) -->
         <VerticalStackLayout x:Name="GameScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="30" IsVisible="False">
-            <!-- این دایره به جای کل پس زمینه، رنگش عوض میشه -->
-            <Frame x:Name="SignalFrame" WidthRequest="150" HeightRequest="150" CornerRadius="75" BackgroundColor="#FF9800" HasShadow="True" BorderColor="Transparent"/>
+            <Frame x:Name="SignalFrame" WidthRequest="200" HeightRequest="200" CornerRadius="100" BackgroundColor="#FF9800" HasShadow="True" BorderColor="Transparent"/>
 
             <Label x:Name="GameStatusLabel" Text="صبر کن..." FontSize="36" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
             <Label x:Name="TimerLabel" Text="00.000" FontSize="60" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" FontFamily="Monospace" />
@@ -79,7 +81,10 @@
         <VerticalStackLayout x:Name="LeaderboardScreen" VerticalOptions="Center" HorizontalOptions="Center" Spacing="20" IsVisible="False" Padding="20">
             <Label Text="🏆 جدول رده‌بندی 🏆" FontSize="32" FontAttributes="Bold" TextColor="#212121" HorizontalOptions="Center" />
 
-            <VerticalStackLayout x:Name="LeaderboardList" Spacing="15" HorizontalOptions="Center" Margin="0,15,0,0" />
+            <!-- Wrap the list in a ScrollView for large leaderboards -->
+            <ScrollView Orientation="Vertical" VerticalOptions="FillAndExpand">
+                <VerticalStackLayout x:Name="LeaderboardList" Spacing="15" HorizontalOptions="Center" Margin="0,15,0,0" />
+            </ScrollView>
 
             <Button Text="بازی مجدد" FontSize="20" FontAttributes="Bold" TextColor="White" BackgroundColor="#2196F3" 
                     CornerRadius="25" HeightRequest="50" WidthRequest="200" Margin="0,30,0,0" Clicked="OnPlayAgainClicked" />

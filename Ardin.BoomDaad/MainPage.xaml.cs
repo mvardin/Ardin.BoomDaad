@@ -30,6 +30,7 @@ public partial class MainPage : ContentPage
     private double _ambientNoiseLevel = 30.0; // صدای محیط (به صورت پیش‌فرض 30)
     private double _maxShoutLevel = 35.0;     // بالاترین دادی که ثبت شده
     private double _dynamicShoutThreshold = 50.0; // آستانه نهایی برای قبولی داد (محاسبه خودکار)
+    private bool _calibrationReady = false;   // whether a good shout has been recorded
 
     public MainPage(IAudioLevelService audioService)
     {
@@ -115,7 +116,12 @@ public partial class MainPage : ContentPage
         CalibrationScreen.IsVisible = true;
         SetBackgroundColor(Colors.White);
 
+        // reset calibration state
         _isInCalibrationMode = true;
+        _calibrationReady = false;
+        CalibrationDoneButton.IsEnabled = false;
+        CalibrationDoneButton.BackgroundColor = Color.FromArgb("#2196F3"); // back to original blue
+
         _audioService.OnLevelChanged -= OnAudioLevelChanged;
         _audioService.OnLevelChanged += OnAudioLevelChanged;
 
@@ -130,8 +136,14 @@ public partial class MainPage : ContentPage
     }
 
     // 4. اتمام کالیبره و رفتن به نفر اول
-    private void OnCalibrationDoneClicked(object sender, EventArgs e)
+    private async void OnCalibrationDoneClicked(object sender, EventArgs e)
     {
+        if (!_calibrationReady)
+        {
+            await DisplayAlert("هشدار", "لطفاً اول یه داد بلند بزن!", "باشه");
+            return;
+        }
+
         _isInCalibrationMode = false;
         _audioService.Stop(); // موقتا میکروفون خاموش بشه
 
@@ -207,28 +219,33 @@ public partial class MainPage : ContentPage
                     _maxShoutLevel = currentLevel;
 
                     // محاسبه هوشمند آستانه: 
-                    // میگیم صدای محیط + 70 درصد از اختلاف سکوت تا داد زدن = آستانه قبولی
-                    // اینطوری طرف لازم نیست تو بازی حتماً تا آخرین حد حنجره‌اش داد بزنه!
                     double difference = _maxShoutLevel - _ambientNoiseLevel;
                     _dynamicShoutThreshold = _ambientNoiseLevel + (difference * 0.7);
                 }
 
-                // نمایش اعداد برای دیباگ شما
+                // نمایش اعداد برای دیباگ
                 RawDbLabel.Text = $"صدا الان: {currentLevel:F0} | محیط: {_ambientNoiseLevel:F0} | رکورد داد: {_maxShoutLevel:F0}";
 
-                // 3. پر کردن پروگرس بار بر اساس رنج داینامیک
+                // 3. پر کردن پروگرس بار
                 double range = _maxShoutLevel - _ambientNoiseLevel;
-                if (range < 5) range = 5; // جلوگیری از تقسیم بر صفر در ثانیه‌های اول
+                if (range < 5) range = 5;
 
                 double progress = (currentLevel - _ambientNoiseLevel) / range;
                 MicLevelBar.Progress = Math.Clamp(progress, 0, 1);
 
-                // 4. بازخورد بصری به کاربر
+                // 4. بازخورد بصری – همچنین بررسی اینکه کالیبره انجام شده
                 if (currentLevel >= _dynamicShoutThreshold && _maxShoutLevel > _ambientNoiseLevel + 15)
                 {
                     MicLevelBar.ProgressColor = Color.FromArgb("#F44336"); // قرمز: داد
                     CalibrationStatusLabel.Text = "عالیه! سیستمت کالیبره شد 🔊";
                     CalibrationStatusLabel.TextColor = Color.FromArgb("#D32F2F");
+
+                    if (!_calibrationReady)
+                    {
+                        _calibrationReady = true;
+                        CalibrationDoneButton.IsEnabled = true;
+                        CalibrationDoneButton.BackgroundColor = Color.FromArgb("#4CAF50"); // سبز : فعال
+                    }
                 }
                 else if (currentLevel > _ambientNoiseLevel + 10)
                 {
@@ -245,7 +262,6 @@ public partial class MainPage : ContentPage
             }
 
             // --- منطق اصلی بازی حین مسابقه ---
-            // اینجا دیگه از عدد ثابت استفاده نمیکنیم، از عددی که سیستم یاد گرفته استفاده میکنیم
             if (currentLevel >= _dynamicShoutThreshold)
             {
                 if (_isWaitingForGreen)
@@ -254,7 +270,7 @@ public partial class MainPage : ContentPage
                 }
                 else if (_isGreenGoState)
                 {
-                    GameOver(true); // برنده شد و درست داد زد
+                    GameOver(true); // برنده شد
                 }
             }
         });
@@ -305,12 +321,11 @@ public partial class MainPage : ContentPage
         }
     }
 
-    // کلیک روی دکمه در صفحه نتیجه (یا تلاش مجدد است، یا نفر بعدی، یا لیدربورد)
+    // کلیک روی دکمه در صفحه نتیجه
     private void OnNextStepClicked(object sender, EventArgs e)
     {
         if (NextStepButton.Text == "تلاش مجدد")
         {
-            // رکورد ثبت نشده، دوباره همین نفر بازی میکنه
             ShowTurnScreen();
         }
         else if (NextStepButton.Text == "بریم نفر بعدی")
