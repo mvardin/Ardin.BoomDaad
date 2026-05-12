@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Graphics;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +64,7 @@ public partial class MainPage : ContentPage
         GameScreen.IsVisible = false;
         ResultScreen.IsVisible = false;
         LeaderboardScreen.IsVisible = false;
+        HelpScreen.IsVisible = false;
     }
 
     // 1. کلیک روی شروع بازی در صفحه اول
@@ -373,6 +374,21 @@ public partial class MainPage : ContentPage
     }
 
     private void OnPlayAgainClicked(object sender, EventArgs e)
+    {
+        HideAllScreens();
+        StartScreen.IsVisible = true;
+        SetBackgroundColor(Colors.White);
+    }
+
+    // --- Help screen handlers ---
+    private void OnHelpClicked(object sender, EventArgs e)
+    {
+        HideAllScreens();
+        HelpScreen.IsVisible = true;
+        SetBackgroundColor(Colors.White);
+    }
+
+    private void OnBackFromHelpClicked(object sender, EventArgs e)
     {
         HideAllScreens();
         StartScreen.IsVisible = true;
