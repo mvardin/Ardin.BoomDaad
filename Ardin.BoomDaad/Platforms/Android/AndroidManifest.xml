@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="in.ardin.BoomDaad" android:versionCode="10201" android:versionName="1.02.01">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="in.ardin.BoomDaad" 
+		  android:versionCode="10318" 
+		  android:versionName="1.03.18">
 	<application android:allowBackup="true" android:icon="@mipmap/appicon" android:supportsRtl="true" android:label="Boom Daad"></application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
