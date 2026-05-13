@@ -1,4 +1,5 @@
 using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Storage;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,8 @@ public partial class MainPage : ContentPage
     private double _maxShoutLevel = 35.0;     // بالاترین دادی که ثبت شده
     private double _dynamicShoutThreshold = 50.0; // آستانه نهایی برای قبولی داد (محاسبه خودکار)
     private bool _calibrationReady = false;   // whether a good shout has been recorded
+
+    private const string PlayersPrefsKey = "saved_players";
 
     public MainPage(IAudioLevelService audioService)
     {
@@ -71,10 +74,33 @@ public partial class MainPage : ContentPage
     private void OnStartClicked(object sender, EventArgs e)
     {
         HideAllScreens();
-        PlayerSetupScreen.IsVisible = true;
-        _players.Clear();
         _scores.Clear();
+        LoadSavedPlayers();
+        PlayerSetupScreen.IsVisible = true;
+    }
+
+    private void LoadSavedPlayers()
+    {
+        string saved = Preferences.Get(PlayersPrefsKey, string.Empty);
+        _players.Clear();
+        if (!string.IsNullOrEmpty(saved))
+        {
+            var names = saved.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+            foreach (var n in names)
+            {
+                string trimmed = n.Trim();
+                if (!string.IsNullOrEmpty(trimmed) && !_players.Contains(trimmed))
+                    _players.Add(trimmed);
+            }
+        }
+        _currentPlayerIndex = 0;
         UpdatePlayersListUI();
+    }
+
+    private void SavePlayers()
+    {
+        string joined = string.Join(";", _players.Select(p => p.Trim()));
+        Preferences.Set(PlayersPrefsKey, joined);
     }
 
     // 2. اضافه کردن بازیکن
@@ -85,6 +111,7 @@ public partial class MainPage : ContentPage
         {
             _players.Add(name);
             PlayerNameEntry.Text = "";
+            SavePlayers();
             UpdatePlayersListUI();
         }
     }
@@ -148,8 +175,22 @@ public partial class MainPage : ContentPage
         _isInCalibrationMode = false;
         _audioService.Stop(); // موقتا میکروفون خاموش بشه
 
+        ShufflePlayers(); // random order each match
+
         _currentPlayerIndex = 0;
         ShowTurnScreen();
+    }
+
+    private void ShufflePlayers()
+    {
+        var rng = new System.Random();
+        int n = _players.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = rng.Next(n + 1);
+            (_players[k], _players[n]) = (_players[n], _players[k]);
+        }
     }
 
     // 5. نمایش صفحه اعلام نوبت
@@ -186,7 +227,7 @@ public partial class MainPage : ContentPage
         _audioService.OnLevelChanged += OnAudioLevelChanged;
         _audioService.Start();
 
-        int delayMs = new Random().Next(2000, 5000);
+        int delayMs = new System.Random().Next(2000, 5000);
         await Task.Delay(delayMs);
 
         if (_isWaitingForGreen)
