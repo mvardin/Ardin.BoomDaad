@@ -450,6 +450,12 @@ public partial class MainPage : ContentPage
         }
     }
 
+    // نمایش جدول رده‌بندی (قابل فراخوانی از هرجا)
+    private void OnShowLeaderboardClicked(object sender, EventArgs e)
+    {
+        ShowLeaderboard();
+    }
+
     private void ShowLeaderboard()
     {
         HideAllScreens();
@@ -457,6 +463,19 @@ public partial class MainPage : ContentPage
         SetBackgroundColor(Colors.White);
 
         LeaderboardList.Children.Clear();
+
+        if (_scores.Count == 0)
+        {
+            var emptyLabel = new Label
+            {
+                Text = "هنوز رکوردی ثبت نشده است.",
+                FontSize = 20,
+                TextColor = Color.FromArgb("#757575"),
+                HorizontalOptions = LayoutOptions.Center
+            };
+            LeaderboardList.Children.Add(emptyLabel);
+            return;
+        }
 
         // مرتب‌سازی رکوردها از کمترین زمان به بیشترین
         var sortedScores = _scores.OrderBy(s => s.Time).ToList();
