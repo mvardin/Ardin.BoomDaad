@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using Ardin.BoomDaad.Services;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace Ardin.BoomDaad;
 
@@ -118,10 +119,78 @@ public partial class MainPage : ContentPage
 
     private void UpdatePlayersListUI()
     {
+        PlayersContainer.Children.Clear();
+
         if (_players.Count == 0)
-            PlayersListLabel.Text = "لیست: خالی";
-        else
-            PlayersListLabel.Text = "بازیکن‌ها: " + string.Join("، ", _players);
+        {
+            PlayersContainer.Children.Add(new Label
+            {
+                Text = "هنوز بازیکنی اضافه نشده!",
+                FontSize = 16,
+                TextColor = Color.FromArgb("#9E9E9E"),
+                HorizontalOptions = LayoutOptions.Center,
+                Margin = new Thickness(0, 10, 0, 0)
+            });
+            return;
+        }
+
+        foreach (string name in _players)
+        {
+            var nameLabel = new Label
+            {
+                Text = name,
+                FontSize = 18,
+                TextColor = Color.FromArgb("#212121"),
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            var removeButton = new Button
+            {
+                Text = "✖",
+                FontSize = 16,
+                TextColor = Colors.White,
+                BackgroundColor = Color.FromArgb("#F44336"),
+                CornerRadius = 15,
+                HeightRequest = 35,
+                WidthRequest = 35,
+                Padding = new Thickness(0),
+                BorderWidth = 0,
+                Margin = new Thickness(0, 0, 0, 0),
+                ClassId = name,
+                HorizontalOptions = LayoutOptions.End,
+                VerticalOptions = LayoutOptions.Center
+            };
+            removeButton.Clicked += OnRemovePlayerClicked;
+
+            var itemLayout = new HorizontalStackLayout
+            {
+                Spacing = 12,
+                Padding = new Thickness(15, 8),
+                Children = { nameLabel, removeButton }
+            };
+
+            var border = new Border
+            {
+                Stroke = new SolidColorBrush(Color.FromArgb("#BDBDBD")),
+                StrokeThickness = 1.5,
+                StrokeShape = new RoundRectangle { CornerRadius = 12 },
+                BackgroundColor = Color.FromArgb("#F5F5F5"),
+                Padding = new Thickness(8),
+                Content = itemLayout
+            };
+
+            PlayersContainer.Children.Add(border);
+        }
+    }
+
+    private void OnRemovePlayerClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.ClassId is string playerName)
+        {
+            _players.Remove(playerName);
+            SavePlayers();
+            UpdatePlayersListUI();
+        }
     }
 
     // 3. رفتن به صفحه کالیبره
