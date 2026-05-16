@@ -35,6 +35,7 @@ public partial class MainPage : ContentPage
     private bool _calibrationReady = false;   // whether a good shout has been recorded
 
     private const string PlayersPrefsKey = "saved_players";
+    private const string ScoresPrefsKey = "saved_scores";
 
     public MainPage(IAudioLevelService audioService)
     {
@@ -51,6 +52,7 @@ public partial class MainPage : ContentPage
                 TimerLabel.Text = $"{(int)_stopwatch.Elapsed.TotalSeconds:D2}.{_stopwatch.Elapsed.Milliseconds:D3}";
         };
 
+        LoadSavedScores();
         SetBackgroundColor(Colors.White);
     }
 
@@ -76,6 +78,7 @@ public partial class MainPage : ContentPage
     {
         HideAllScreens();
         _scores.Clear();
+        SaveScores(); // clear persisted scores for new game
         LoadSavedPlayers();
         PlayerSetupScreen.IsVisible = true;
     }
@@ -407,6 +410,7 @@ public partial class MainPage : ContentPage
 
             // ذخیره رکورد
             _scores.Add(new PlayerScore { Name = currentPlayer, Time = finalTime });
+            SaveScores(); // persist scores after each successful round
 
             SetBackgroundColor(Colors.White);
             ResultIconLabel.Text = "🎯";
@@ -463,6 +467,9 @@ public partial class MainPage : ContentPage
         SetBackgroundColor(Colors.White);
 
         LeaderboardList.Children.Clear();
+
+        // Reload scores from storage to ensure we show the latest persisted data
+        LoadSavedScores();
 
         if (_scores.Count == 0)
         {
@@ -522,5 +529,32 @@ public partial class MainPage : ContentPage
         HideAllScreens();
         StartScreen.IsVisible = true;
         SetBackgroundColor(Colors.White);
+    }
+
+    // --- Persist leaderboard scores ---
+    private void SaveScores()
+    {
+        // Format: "Name:Time;Name:Time;..."
+        var entries = _scores.Select(s => $"{s.Name}:{s.Time}");
+        string joined = string.Join(";", entries);
+        Preferences.Set(ScoresPrefsKey, joined);
+    }
+
+    private void LoadSavedScores()
+    {
+        string saved = Preferences.Get(ScoresPrefsKey, string.Empty);
+        _scores.Clear();
+        if (!string.IsNullOrEmpty(saved))
+        {
+            var parts = saved.Split(';', System.StringSplitOptions.RemoveEmptyEntries);
+            foreach (var part in parts)
+            {
+                var kv = part.Split(':');
+                if (kv.Length == 2 && double.TryParse(kv[1], out double time))
+                {
+                    _scores.Add(new PlayerScore { Name = kv[0], Time = time });
+                }
+            }
+        }
     }
 }
